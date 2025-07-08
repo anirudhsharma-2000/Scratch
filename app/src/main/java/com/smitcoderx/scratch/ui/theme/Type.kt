@@ -14,6 +14,20 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
+    displayMedium = TextStyle(
+        fontFamily = Fonts.lexendFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 30.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = Fonts.lexendFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = Fonts.lexendFamily,
         fontWeight = FontWeight.Normal,
@@ -21,13 +35,7 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    titleMedium = TextStyle(
-        fontFamily = Fonts.lexendFamily,
-        fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
+
     labelSmall = TextStyle(
         fontFamily = Fonts.lexendFamily,
         fontWeight = FontWeight.Normal,
