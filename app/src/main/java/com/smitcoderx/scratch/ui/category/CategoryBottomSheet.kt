@@ -1,4 +1,4 @@
-package com.smitcoderx.scratch.ui.home
+package com.smitcoderx.scratch.ui.category
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import com.smitcoderx.scratch.data.home.Categories
-import com.smitcoderx.scratch.data.home.Category
+import com.smitcoderx.scratch.data.category.Categories
+import com.smitcoderx.scratch.data.category.Category
 import com.smitcoderx.scratch.ui.theme.Typography
 import kotlin.enums.EnumEntries
 
@@ -127,10 +127,9 @@ fun CategoryBottomSheet(
                 onClick = {
                     viewModel.addCategory(
                         Category(
-                            (0..9999).random().toInt(), // TODO: Change this also 
-                            categoryName,
-                            selectedFilter,
-                            selectedColor
+                            name = categoryName,
+                            type = selectedFilter,
+                            color = selectedColor.toLong()
                         )
                     )
                     onDismissRequest()

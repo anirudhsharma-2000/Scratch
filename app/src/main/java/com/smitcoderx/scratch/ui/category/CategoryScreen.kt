@@ -1,4 +1,4 @@
-package com.smitcoderx.scratch.ui.home
+package com.smitcoderx.scratch.ui.category
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,15 +46,16 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.smitcoderx.scratch.R
-import com.smitcoderx.scratch.data.home.Categories
-import com.smitcoderx.scratch.data.home.Category
+import com.smitcoderx.scratch.data.category.Categories
+import com.smitcoderx.scratch.data.category.Category
 import com.smitcoderx.scratch.ui.theme.Typography
 import kotlinx.coroutines.delay
 import java.lang.Integer.max
 
 @Composable
 fun CategoryScreen(modifier: Modifier = Modifier) {
-    val viewModel: CategoryViewModel = viewModel()
+    val viewModel: CategoryViewModel =
+        viewModel(factory = CategoryViewModelProvider(LocalContext.current))
     val createdCategories = viewModel.categories.collectAsStateWithLifecycle().value
     val categories = Categories.entries
     var animatedText by remember { mutableStateOf(categories[(0..4).random()]) }
@@ -145,7 +147,7 @@ private fun CategoryCard(category: Category, index: Int, size: Int) {
             .padding(horizontal = rotation.dp),
         onClick = {},
         shape = RoundedCornerShape(30.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(category.color))
+        colors = CardDefaults.cardColors(containerColor = Color(category.color.toULong()))
     ) {
         Row(
             modifier = Modifier
@@ -161,7 +163,11 @@ private fun CategoryCard(category: Category, index: Int, size: Int) {
             Box(
                 modifier = Modifier
                     .size(50.dp)
-                    .border(width = (0.1).dp, color = MaterialTheme.colorScheme.onBackground, shape = CircleShape)
+                    .border(
+                        width = (0.1).dp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        shape = CircleShape
+                    )
             )
         }
     }
