@@ -11,7 +11,7 @@ import com.smitcoderx.scratch.ui.home.HomeScreen
 @Composable
 fun RootNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = Screens.Category.name, modifier = modifier) {
+    NavHost(navController, startDestination = Screens.Home.name, modifier = modifier) {
         composable(Screens.Home.name) { HomeScreen(modifier) }
         composable(Screens.Category.name) { CategoryScreen() }
     }
