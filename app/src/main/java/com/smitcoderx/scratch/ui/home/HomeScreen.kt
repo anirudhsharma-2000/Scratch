@@ -45,19 +45,23 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.smitcoderx.scratch.R
 import com.smitcoderx.scratch.data.category.Category
+import com.smitcoderx.scratch.ui.navigation.Screens
 import com.smitcoderx.scratch.ui.theme.Typography
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) {
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModelProvider(LocalContext.current))
     val categories = homeViewModel.categories.collectAsStateWithLifecycle().value
     val notes = homeViewModel.notes.collectAsStateWithLifecycle().value
     val selectedNotes = remember { mutableListOf<Int>() }
     var isSelectionEnabled by remember { mutableStateOf(false) }
-    BottomToolbar(onClick = {}, query = { it }) {
+    BottomToolbar(
+        onClick = { navController.navigate("${Screens.Note.name}?noteId=") },
+        query = { it }) {
         Column(
             modifier.padding(horizontal = 10.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
@@ -74,12 +78,11 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             ) {
                 itemsIndexed(notes) { index, item ->
                     NoteCard(
-                        item,
-                        isSelectionEnabled,
+                        note = item,
+                        isSelectionEnabled = isSelectionEnabled,
                         onClick = {
-                            if (selectedNotes.contains(item.id)) selectedNotes.remove(item.id) else selectedNotes.add(
-                                item.id
-                            )
+                            // TODO: Add a withArgs function from clean code
+                            navController.navigate("${Screens.Note.name}?noteId=${item.id}")
                         },
                         onLongClick = { isSelectionEnabled = it },
                         selectedId = { selectedNotes.add(it) })

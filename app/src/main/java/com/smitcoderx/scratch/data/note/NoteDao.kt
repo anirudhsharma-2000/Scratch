@@ -21,6 +21,9 @@ interface NoteDao {
     @Query("SELECT * FROM Note")
     suspend fun fetchNotes(): List<Note>
 
+    @Query("SELECT * FROM Note where id = :noteId")
+    suspend fun fetchNote(noteId: Int): Note?
+
     @Query("SELECT * FROM Note WHERE categoryId = :categoryId")
     suspend fun fetchNotesByCategory(categoryId: Int): List<Note>
 }

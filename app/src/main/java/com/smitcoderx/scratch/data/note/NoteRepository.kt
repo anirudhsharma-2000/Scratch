@@ -7,8 +7,10 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     suspend fun deleteNote(note: Note) = noteDao.deleteNote(note)
 
-    suspend fun fetchNotes(): List<Note> = noteDao.fetchNotes()
+    suspend fun fetchNotes() = noteDao.fetchNotes()
 
-    suspend fun fetchNotesByCategory(categoryId: Int): List<Note> =
+    suspend fun fetchNote(noteId: Int) = noteDao.fetchNote(noteId)
+
+    suspend fun fetchNotesByCategory(categoryId: Int) =
         noteDao.fetchNotesByCategory(categoryId)
 }

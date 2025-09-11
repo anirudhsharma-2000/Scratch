@@ -48,7 +48,7 @@ fun NoteCard(
     Card(
         modifier = Modifier
             .combinedClickable(
-                onClick = { onClick() },
+                onClick = onClick,
                 onLongClick = {
                     selectionEnabled = selectionEnabled.not()
                     selectedId(note.id)
@@ -68,6 +68,7 @@ fun NoteCard(
                     text = note.title,
                     style = Typography.bodyLarge
                 )
+                Spacer(Modifier.padding(vertical = 10.dp))
             }
             when (note.type) {
                 Categories.Notes.title -> NotesView(note.content)
