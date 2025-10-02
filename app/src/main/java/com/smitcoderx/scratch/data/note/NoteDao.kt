@@ -1,11 +1,11 @@
 package com.smitcoderx.scratch.data.note
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
@@ -15,15 +15,15 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: Note)
 
-    @Delete
-    suspend fun deleteNote(note: Note)
+    @Query("DELETE FROM Note WHERE id IN (:noteIds)")
+    suspend fun deleteNotes(noteIds: Set<Int>)
 
     @Query("SELECT * FROM Note")
-    suspend fun fetchNotes(): List<Note>
+    fun fetchNotes(): Flow<List<Note>>
 
     @Query("SELECT * FROM Note where id = :noteId")
-    suspend fun fetchNote(noteId: Int): Note?
+    suspend fun fetchNote(noteId: Int?): Note?
 
     @Query("SELECT * FROM Note WHERE categoryId = :categoryId")
-    suspend fun fetchNotesByCategory(categoryId: Int): List<Note>
+    fun fetchNotesByCategory(categoryId: Int): Flow<List<Note>>
 }

@@ -1,55 +1,41 @@
 package com.smitcoderx.scratch.ui.home
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.SearchOff
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalFloatingToolbar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.smitcoderx.scratch.R
-import com.smitcoderx.scratch.data.category.Category
+import com.smitcoderx.scratch.ui.home.widgets.BottomBarState
+import com.smitcoderx.scratch.ui.home.widgets.BottomToolbar
+import com.smitcoderx.scratch.ui.home.widgets.CategoryFilters
 import com.smitcoderx.scratch.ui.navigation.Screens
 import com.smitcoderx.scratch.ui.theme.Typography
+import com.smitcoderx.scratch.ui.widgets.fadingEdge
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -57,21 +43,64 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
         viewModel(factory = HomeViewModelProvider(LocalContext.current))
     val categories = homeViewModel.categories.collectAsStateWithLifecycle().value
     val notes = homeViewModel.notes.collectAsStateWithLifecycle().value
-    val selectedNotes = remember { mutableListOf<Int>() }
-    var isSelectionEnabled by remember { mutableStateOf(false) }
+    val selectedCategory = homeViewModel.selectedCategory.collectAsStateWithLifecycle().value
+    val selectedNotes = homeViewModel.selectedNotes.collectAsStateWithLifecycle().value
     BottomToolbar(
-        onClick = { navController.navigate("${Screens.Note.name}?noteId=") },
-        query = { it }) {
+        // TODO: Bug Fix
+        //  FIX: when the list is empty and when new item is added the item is automatically gets selected
+        selectionEnabled = notes.isNotEmpty(),
+        isSelected = selectedNotes.isNotEmpty(),
+        onClick = {
+            when (it) {
+                BottomBarState.Add -> navController.navigate("${Screens.Note.name}?noteId=")
+                BottomBarState.UnSelectAll -> homeViewModel.unselectAllNotes()
+                BottomBarState.SelectAll -> homeViewModel.selectAllNotes()
+                BottomBarState.Delete -> homeViewModel.deleteNote()
+            }
+        },
+        query = { homeViewModel.search(it) }) {
         Column(
             modifier.padding(horizontal = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(stringResource(R.string.app_name), style = Typography.displayMedium)
             }
-            CategoryFilters(categories) { homeViewModel.fetchByCategory(it.id) }
+            // TODO: FIX: When Notes are deleted the filter should be visible
+//            AnimatedVisibility(selectedNotes.isEmpty()) {
+            CategoryFilters(categories, selectedCategory) { homeViewModel.selectCategory(it) }
+//            }
+            AnimatedVisibility(notes.isEmpty()) {
+                Column(
+                    modifier
+                        .fillMaxSize()
+                        .padding(top = 100.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        modifier = Modifier.size(200.dp),
+                        colorFilter = ColorFilter.tint(LocalContentColor.current.copy(0.5f)),
+                        painter = painterResource(R.drawable.no_data),
+                        contentDescription = "Empty"
+                    )
+                    Text(
+                        "Woofs! Nothing Found",
+                        color = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+                    )
+                }
+                return@AnimatedVisibility
+            }
             LazyVerticalStaggeredGrid(
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fadingEdge(
+                        Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            0.1f to Color.Black,
+                            0.9f to Color.Black,
+                            1f to Color.Transparent
+                        )
+                    ),
                 columns = StaggeredGridCells.Fixed(2),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalItemSpacing = 4.dp
@@ -79,111 +108,19 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 itemsIndexed(notes) { index, item ->
                     NoteCard(
                         note = item,
-                        isSelectionEnabled = isSelectionEnabled,
+                        isSelectionEnabled = selectedNotes.contains(item.id),
                         onClick = {
-                            // TODO: Add a withArgs function from clean code
-                            navController.navigate("${Screens.Note.name}?noteId=${item.id}")
+                            // TODO: Add a withArgs function for clean code readability
+                            if (selectedNotes.isNotEmpty()) {
+                                homeViewModel.toggleNoteSelection(it)
+                            } else {
+                                navController.navigate("${Screens.Note.name}?noteId=${it}")
+                            }
                         },
-                        onLongClick = { isSelectionEnabled = it },
-                        selectedId = { selectedNotes.add(it) })
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CategoryFilters(categories: List<Category>, selected: (Category) -> Unit) {
-    var selected by remember { mutableStateOf<Category?>(null) }
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        categories.forEach {
-            FilterChip(
-                selected = selected == it,
-                onClick = {
-                    selected = it
-                    selected(it)
-                },
-                label = {
-                    Text(
-                        modifier = Modifier.padding(vertical = 12.dp, horizontal = 8.dp),
-                        text = it.name,
-                        style = Typography.labelMedium
+                        onLongClick = { homeViewModel.toggleNoteSelection(it) }
                     )
-                }, shape = RoundedCornerShape(30.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun SearchBar(query: (String) -> Unit) {
-    var search by remember { mutableStateOf("") }
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = search,
-        minLines = 1,
-        shape = RoundedCornerShape(20.dp),
-        onValueChange = { search = it },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(onDone = { query(search) }),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-        ),
-        placeholder = {
-            Text(
-                text = "Search here 🔎",
-                style = Typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(0.6f),
-            )
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Composable
-private fun BottomToolbar(
-    onClick: () -> Unit,
-    query: (String) -> Unit,
-    content: @Composable () -> Unit,
-) {
-    var searchVisible by remember { mutableStateOf(false) }
-    Scaffold(
-        containerColor = Color.Transparent,
-        bottomBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                HorizontalFloatingToolbar(
-                    modifier = Modifier.padding(40.dp),
-                    expanded = true,
-                    floatingActionButton = {
-                        FloatingActionButton(onClick = { onClick() }) {
-                            Icon(Icons.Default.Add, contentDescription = "Add")
-                        }
-                    }) {
-                    IconButton(onClick = { searchVisible = searchVisible.not() }) {
-                        Icon(
-                            if (searchVisible) Icons.Default.SearchOff else Icons.Default.Search,
-                            contentDescription = "Search"
-                        )
-                    }
-                }
-                AnimatedVisibility(visible = searchVisible) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                MaterialTheme.colorScheme.surface,
-                                RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
-                            )
-                            .padding(10.dp)
-                    ) { SearchBar { query(it) } }
                 }
             }
         }
-    ) { content() }
+    }
 }

@@ -1,6 +1,6 @@
 package com.smitcoderx.scratch.ui.home
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,22 +11,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.smitcoderx.scratch.Constants.TAG
 import com.smitcoderx.scratch.data.category.Categories
 import com.smitcoderx.scratch.data.note.Note
 import com.smitcoderx.scratch.ui.theme.Typography
@@ -35,32 +31,26 @@ import java.util.Locale
 
 @Composable
 fun NoteCard(
+    modifier: Modifier = Modifier,
     note: Note,
     isSelectionEnabled: Boolean,
-    onClick: () -> Unit,
-    onLongClick: (Boolean) -> Unit,
-    selectedId: (Int) -> Unit,
+    onClick: (Int) -> Unit,
+    onLongClick: (Int) -> Unit,
 ) {
-    Log.d(TAG, "NoteCard: ${note.id} $isSelectionEnabled")
-    var selectionEnabled by remember { mutableStateOf(false) }
     val formattedDate =
         SimpleDateFormat("dd MMMM yyyy", Locale.ENGLISH).format(note.createdAt)
     Card(
-        modifier = Modifier
+        modifier = modifier
             .combinedClickable(
-                onClick = onClick,
-                onLongClick = {
-                    selectionEnabled = selectionEnabled.not()
-                    selectedId(note.id)
-                    onLongClick(selectionEnabled)
-                })
+                onClick = { onClick(note.id) },
+                onLongClick = { onLongClick(note.id) })
             .fillMaxWidth(),
-        border = if (selectionEnabled) BorderStroke(2.dp, Color.Red) else null
+        border = if (isSelectionEnabled) BorderStroke(2.dp, Color.Gray) else null
     ) {
         Column(
             Modifier
-                .padding(10.dp)
                 .fillMaxWidth()
+                .padding(10.dp)
         ) {
             if (note.type != Categories.Encrypted.title) {
                 Text(
@@ -84,13 +74,13 @@ fun NoteCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-//                AnimatedVisibility(isSelected) {
-//                    Checkbox(
-//                        selectedCheck,
-//                        modifier = Modifier.clip(CircleShape),
-//                        onCheckedChange = { selectedCheck = selectedCheck.not() },
-//                    )
-//                }
+                AnimatedVisibility(isSelectionEnabled) {
+                    Icon(
+                        modifier = Modifier.size(15.dp),
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = "Selected"
+                    )
+                }
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = formattedDate,

@@ -17,6 +17,7 @@ fun RootNavigation(modifier: Modifier = Modifier) {
     NavHost(navController, startDestination = Screens.Home.name, modifier = modifier) {
         composable(Screens.Home.name) { HomeScreen(modifier, navController) }
         composable(Screens.Category.name) { CategoryScreen() }
+        // TODO: add new param isNew or something
         composable(
             route = "${Screens.Note.name}?noteId={id}",
             arguments = listOf(navArgument("id") {

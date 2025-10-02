@@ -5,12 +5,12 @@ class NoteRepository(private val noteDao: NoteDao) {
 
     suspend fun updateNote(note: Note) = noteDao.updateNote(note)
 
-    suspend fun deleteNote(note: Note) = noteDao.deleteNote(note)
+    suspend fun deleteNotes(noteIds: Set<Int>) = noteDao.deleteNotes(noteIds)
 
-    suspend fun fetchNotes() = noteDao.fetchNotes()
+    fun fetchNotes() = noteDao.fetchNotes()
 
-    suspend fun fetchNote(noteId: Int) = noteDao.fetchNote(noteId)
+    suspend fun fetchNote(noteId: Int?) = noteDao.fetchNote(noteId)
 
-    suspend fun fetchNotesByCategory(categoryId: Int) =
+    fun fetchNotesByCategory(categoryId: Int) =
         noteDao.fetchNotesByCategory(categoryId)
 }
