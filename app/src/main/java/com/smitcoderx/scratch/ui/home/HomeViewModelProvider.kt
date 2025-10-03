@@ -11,9 +11,7 @@ class HomeViewModelProvider(val context: Context) : ViewModelProvider.NewInstanc
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return HomeViewModel(
             noteRepository = NoteRepository(AppDatabase.getDatabase(context).noteDao()),
-            categoryRepository = CategoryRepository(
-                AppDatabase.getDatabase(context).categoryDao()
-            )
+            categoryRepository = CategoryRepository(AppDatabase.getDatabase(context).categoryDao())
         ) as T
     }
 }

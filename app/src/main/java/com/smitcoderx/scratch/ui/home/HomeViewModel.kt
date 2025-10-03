@@ -16,8 +16,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val noteRepository: NoteRepository,
-    private val categoryRepository: CategoryRepository
+    private val noteRepository: NoteRepository, categoryRepository: CategoryRepository
 ) : ViewModel() {
     private val _selectedCategory = MutableStateFlow<Category?>(null)
     val selectedCategory = _selectedCategory.asStateFlow()
@@ -35,7 +34,6 @@ class HomeViewModel(
             noteRepository.fetchNotesByCategory(it.id)
         }
     }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
-
 
     fun toggleNoteSelection(id: Int) {
         if (_selectedNotes.value.contains(id)) unSelectNote(id) else selectNote(id)
@@ -61,11 +59,12 @@ class HomeViewModel(
     }
 
     fun selectCategory(category: Category?) {
-        _selectedCategory.value = category
+//        _selectedCategory.value = category
     }
 
     fun deleteNote() = viewModelScope.launch {
         noteRepository.deleteNotes(selectedNotes.value)
+        _selectedNotes.value = emptySet()
     }
 
     // TODO: the searching logic is fuzzy, need to improve basis on its title and content available.

@@ -1,7 +1,5 @@
 package com.smitcoderx.scratch.data.category
 
-import kotlinx.coroutines.flow.Flow
-
 class CategoryRepository(private val categoryDao: CategoryDao) {
     suspend fun addCategory(category: Category) = categoryDao.addCategory(category)
 
@@ -9,5 +7,5 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
 
     suspend fun deleteCategory(category: Category) = categoryDao.deleteCategory(category)
 
-    fun fetchCategories(): Flow<List<Category>> = categoryDao.fetchCategories()
+    fun fetchCategories() = categoryDao.fetchCategories()
 }

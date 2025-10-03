@@ -45,6 +45,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val notes = homeViewModel.notes.collectAsStateWithLifecycle().value
     val selectedCategory = homeViewModel.selectedCategory.collectAsStateWithLifecycle().value
     val selectedNotes = homeViewModel.selectedNotes.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
     BottomToolbar(
         // TODO: Bug Fix
         //  FIX: when the list is empty and when new item is added the item is automatically gets selected
@@ -67,9 +68,9 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 Text(stringResource(R.string.app_name), style = Typography.displayMedium)
             }
             // TODO: FIX: When Notes are deleted the filter should be visible
-//            AnimatedVisibility(selectedNotes.isEmpty()) {
-            CategoryFilters(categories, selectedCategory) { homeViewModel.selectCategory(it) }
-//            }
+            AnimatedVisibility(selectedNotes.isEmpty()) {
+                CategoryFilters(categories, selectedCategory) { homeViewModel.selectCategory(it) }
+            }
             AnimatedVisibility(notes.isEmpty()) {
                 Column(
                     modifier
