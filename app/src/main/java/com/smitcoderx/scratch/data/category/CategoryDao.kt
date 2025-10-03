@@ -20,5 +20,5 @@ interface CategoryDao {
     suspend fun deleteCategory(category: Category)
 
     @Query("SELECT * FROM Category")
-    fun fetchCategories(): Flow<List<Category>>
+    fun fetchCategories(): Flow<MutableList<Category>>
 }
