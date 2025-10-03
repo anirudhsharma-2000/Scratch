@@ -71,8 +71,8 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                     selectedCategory = selectedCategory,
                     selected = { homeViewModel.selectCategory(it) },
                     onAddFilter = { isSheetOpen = true },
-                    onEditFilter = {  },
-                    onDeleteFilter = {homeViewModel.deleteFilter(it)})
+                    onEditFilter = { },
+                    onDeleteFilter = { homeViewModel.deleteFilter(it) })
             }
             AnimatedVisibility(notes.isEmpty()) {
                 EmptyView(modifier)
@@ -95,6 +95,7 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
             ) {
                 itemsIndexed(notes) { index, item ->
                     NoteCard(
+                        modifier = Modifier.then(if (index < 2) Modifier.padding(top = 10.dp) else Modifier),
                         note = item,
                         isSelectionEnabled = selectedNotes.contains(item.id),
                         onClick = {
