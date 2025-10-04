@@ -23,6 +23,12 @@ class HomeViewModel(
     private val _selectedNotes = MutableStateFlow<Set<Int>>(setOf())
     val selectedNotes = _selectedNotes.asStateFlow()
 
+    private val _isSheetOpen = MutableStateFlow(false)
+    val isSheetOpen = _isSheetOpen.asStateFlow()
+
+    private val _editCategory = MutableStateFlow<Category?>(null)
+    val editCategory = _editCategory.asStateFlow()
+
     val categories = categoryRepository.fetchCategories()
         .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -34,6 +40,15 @@ class HomeViewModel(
             noteRepository.fetchNotesByCategory(it.id)
         }
     }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun editCategory(category: Category?) {
+        _editCategory.value = category
+    }
+
+    fun handleSheetState(isOpen: Boolean) {
+        if (isOpen.not()) _editCategory.value = null
+        _isSheetOpen.value = isOpen
+    }
 
     fun toggleNoteSelection(id: Int) {
         if (_selectedNotes.value.contains(id)) unSelectNote(id) else selectNote(id)

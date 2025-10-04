@@ -40,7 +40,7 @@ fun BottomToolbar(
     isSelected: Boolean,
     onClick: (BottomBarState) -> Unit,
     query: (String) -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     var searchVisible by rememberSaveable { mutableStateOf(false) }
     Scaffold(

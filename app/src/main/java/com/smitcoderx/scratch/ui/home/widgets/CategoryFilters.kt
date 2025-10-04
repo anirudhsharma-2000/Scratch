@@ -1,5 +1,6 @@
 package com.smitcoderx.scratch.ui.home.widgets
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,22 +18,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.smitcoderx.scratch.data.category.Category
 import com.smitcoderx.scratch.ui.theme.Typography
@@ -43,12 +41,12 @@ fun CategoryFilters(
     categories: List<Category>,
     selectedCategory: Category?,
     selected: (Category?) -> Unit,
+    editCategory: Category? = null,
     onAddFilter: () -> Unit = {},
-    onEditFilter: (Category) -> Unit = {},
-    onDeleteFilter: (Category) -> Unit = {}
+    onLongClick: (Category) -> Unit = {},
 ) {
     if (categories.isEmpty()) return
-    var isEditable by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.Top
@@ -83,13 +81,8 @@ fun CategoryFilters(
                         )
                     }, shape = RoundedCornerShape(30.dp),
                     trailingIcon = {
-                        AnimatedVisibility(isEditable && index != 0) {
-                            Icon(
-                                Icons.Outlined.Close,
-                                contentDescription = "Delete Filter",
-                                modifier = Modifier
-                                    .clip(CircleShape)
-                                    .clickable { onDeleteFilter(filter) })
+                        AnimatedVisibility(editCategory != null && index != 0 && editCategory == filter) {
+                            Icon(Icons.Outlined.Edit, contentDescription = "Selected Filter")
                             return@AnimatedVisibility
                         }
                     }
@@ -98,16 +91,19 @@ fun CategoryFilters(
                     modifier = Modifier
                         .matchParentSize()
                         .combinedClickable(
-                            onLongClick = { isEditable = !isEditable },
+                            onLongClick = {
+                                if (index != 0) onLongClick(filter)
+                                else Toast.makeText(
+                                    context,
+                                    "Cannot edit this filter",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
                             onClick = {
-                                if (isEditable) {
-                                    onEditFilter(filter)
+                                if (selectedCategory == filter) {
+                                    selected(null)
                                 } else {
-                                    if (selectedCategory == filter) {
-                                        selected(null)
-                                    } else {
-                                        selected(filter)
-                                    }
+                                    selected(filter)
                                 }
                             },
                             interactionSource = inputChipInteractionSource,

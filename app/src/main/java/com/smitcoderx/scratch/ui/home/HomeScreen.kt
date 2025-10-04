@@ -13,10 +13,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,7 +40,8 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val notes = homeViewModel.notes.collectAsStateWithLifecycle().value
     val selectedCategory = homeViewModel.selectedCategory.collectAsStateWithLifecycle().value
     val selectedNotes = homeViewModel.selectedNotes.collectAsStateWithLifecycle().value
-    var isSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val editCategory = homeViewModel.editCategory.collectAsStateWithLifecycle().value
+    val isSheetOpen = homeViewModel.isSheetOpen.collectAsStateWithLifecycle().value
     Log.d(TAG, "HomeScreen: $categories")
     BottomToolbar(
         selectionEnabled = notes.isNotEmpty(),
@@ -70,9 +67,13 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                     categories = categories,
                     selectedCategory = selectedCategory,
                     selected = { homeViewModel.selectCategory(it) },
-                    onAddFilter = { isSheetOpen = true },
-                    onEditFilter = { },
-                    onDeleteFilter = { homeViewModel.deleteFilter(it) })
+                    editCategory = editCategory,
+                    onAddFilter = { homeViewModel.handleSheetState(true) },
+                    onLongClick = {
+                        homeViewModel.handleSheetState(true)
+                        homeViewModel.editCategory(it)
+                    }
+                )
             }
             AnimatedVisibility(notes.isEmpty()) {
                 EmptyView(modifier)
@@ -111,6 +112,8 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 }
             }
         }
-        CategoryBottomSheet(modifier, isSheetOpen) { isSheetOpen = false }
+        CategoryBottomSheet(modifier, isSheetOpen, editCategory) {
+            homeViewModel.handleSheetState(false)
+        }
     }
 }
