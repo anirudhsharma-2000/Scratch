@@ -1,6 +1,5 @@
 package com.smitcoderx.scratch.ui.home
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.smitcoderx.scratch.Constants.TAG
 import com.smitcoderx.scratch.R
 import com.smitcoderx.scratch.ui.home.widgets.BottomBarState
 import com.smitcoderx.scratch.ui.home.widgets.BottomToolbar
@@ -42,7 +40,6 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
     val selectedNotes = homeViewModel.selectedNotes.collectAsStateWithLifecycle().value
     val editCategory = homeViewModel.editCategory.collectAsStateWithLifecycle().value
     val isSheetOpen = homeViewModel.isSheetOpen.collectAsStateWithLifecycle().value
-    Log.d(TAG, "HomeScreen: $categories")
     BottomToolbar(
         selectionEnabled = notes.isNotEmpty(),
         isSelected = selectedNotes.isNotEmpty(),

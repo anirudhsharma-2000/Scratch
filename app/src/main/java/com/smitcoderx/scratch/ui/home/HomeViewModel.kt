@@ -41,12 +41,12 @@ class HomeViewModel(
         }
     }.stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(5000), emptyList())
 
-    fun editCategory(category: Category?) {
+    fun editCategory(category: Category? = null) {
         _editCategory.value = category
     }
 
     fun handleSheetState(isOpen: Boolean) {
-        if (isOpen.not()) _editCategory.value = null
+        if (isOpen.not()) editCategory()
         _isSheetOpen.value = isOpen
     }
 

@@ -45,7 +45,6 @@ fun CategoryFilters(
     onAddFilter: () -> Unit = {},
     onLongClick: (Category) -> Unit = {},
 ) {
-    if (categories.isEmpty()) return
     val context = LocalContext.current
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),

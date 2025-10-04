@@ -53,7 +53,7 @@ fun CategoryBottomSheet(
     val coroutineScope = rememberCoroutineScope()
     var name by remember { mutableStateOf(category?.name ?: "") }
     var type by remember { mutableStateOf(category?.type ?: "") }
-    LaunchedEffect(category) {
+    LaunchedEffect(isSheetOpen, category) {
         name = category?.name ?: ""
         type = category?.type ?: ""
     }

@@ -11,6 +11,8 @@ class CategoryRepository(private val categoryDao: CategoryDao) {
 
     fun fetchCategories() = categoryDao.fetchCategories().map {
         // TODO: To finalize if we need the Add or not
-        it.apply { it.add(0, Category(id = 0, name = "All", type = "All", color = 0L)) }
+        it.apply {
+            if (it.isNotEmpty()) it.add(0, Category(id = 0, name = "All", type = "All", color = 0L))
+        }
     }
 }
