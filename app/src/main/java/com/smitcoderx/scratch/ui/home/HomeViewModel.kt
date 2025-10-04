@@ -82,6 +82,12 @@ class HomeViewModel(
         _selectedNotes.value = emptySet()
     }
 
+    fun addFilter(category: Category, isEdit: Boolean = false) = viewModelScope.launch {
+        Log.d(TAG, "addFilter: $category $isEdit")
+        if (isEdit) categoryRepository.updateCategory(category)
+        else categoryRepository.addCategory(category)
+    }
+
     fun deleteFilter(category: Category) = viewModelScope.launch {
         categoryRepository.deleteCategory(category)
     }

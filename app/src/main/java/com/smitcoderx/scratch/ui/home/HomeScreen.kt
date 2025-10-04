@@ -112,8 +112,12 @@ fun HomeScreen(modifier: Modifier = Modifier, navController: NavHostController) 
                 }
             }
         }
-        CategoryBottomSheet(modifier, isSheetOpen, editCategory) {
-            homeViewModel.handleSheetState(false)
-        }
+        CategoryBottomSheet(
+            modifier,
+            isSheetOpen,
+            editCategory,
+            onDone = { filter, isEdit -> homeViewModel.addFilter(filter, isEdit) },
+            onDelete = { homeViewModel.deleteFilter(it) },
+            onDismiss = { homeViewModel.handleSheetState(false) })
     }
 }

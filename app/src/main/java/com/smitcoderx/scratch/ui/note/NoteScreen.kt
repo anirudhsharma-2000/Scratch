@@ -33,6 +33,7 @@ import com.smitcoderx.scratch.data.category.Categories
 import com.smitcoderx.scratch.data.note.Note
 import com.smitcoderx.scratch.ui.theme.Typography
 
+// TODO: Rewrite the Screen with better approach for figure out why i did it..
 @Composable
 fun NoteScreen(modifier: Modifier = Modifier, noteId: String?) {
     val noteViewModel: NoteViewModel =
@@ -125,7 +126,6 @@ private fun RenderTextField(
         textStyle = style,
         cursorBrush = SolidColor(LocalContentColor.current.copy(alpha = 0.3f)),
         keyboardOptions = KeyboardOptions.Default,
-        keyboardActions = KeyboardActions(onDone = { }),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 10.dp)
